@@ -1,0 +1,42 @@
+# Flatpak manifest for Ingatku.
+# Run prepare.sh first so zllai26 is replaced with your GitHub username.
+app-id: io.github.zllai26.Ingatku
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'      # use the newest version that org.electronjs.Electron2.BaseApp offers
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '25.08'         # keep this the same as runtime-version
+command: ingatku
+separate-locales: false
+
+finish-args:
+  - --share=ipc
+  - --socket=x11                              # Electron's Wayland support is still experimental
+  - --socket=pulseaudio
+  - --device=dri
+  - --talk-name=org.freedesktop.Notifications # desktop notifications (the alarms)
+  - --talk-name=org.kde.StatusNotifierWatcher # the tray icon
+
+modules:
+  - name: ingatku
+    buildsystem: simple
+    build-commands:
+      - cp -a ingatku-bin /app/ingatku
+      - install -Dm755 ingatku.sh /app/bin/ingatku
+      - install -Dm644 io.github.zllai26.Ingatku.desktop /app/share/applications/io.github.zllai26.Ingatku.desktop
+      - install -Dm644 io.github.zllai26.Ingatku.metainfo.xml /app/share/metainfo/io.github.zllai26.Ingatku.metainfo.xml
+      - install -Dm644 ingatku-icon.png /app/share/icons/hicolor/512x512/apps/io.github.zllai26.Ingatku.png
+    sources:
+      - type: archive
+        path: ../../linux-app/ingatku-0.4.0-linux-x64.tar.gz
+        sha256: 8e8aa30b1620671daae7999a287f28f6b34e5f2b3c9631309473248a5a68e844
+        only-arches: [x86_64]
+        dest: ingatku-bin
+      - type: file
+        path: ingatku.sh
+      - type: file
+        path: io.github.zllai26.Ingatku.desktop
+      - type: file
+        path: io.github.zllai26.Ingatku.metainfo.xml
+      - type: file
+        path: ingatku-icon.png
